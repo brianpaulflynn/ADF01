@@ -50,15 +50,52 @@ resource "azurerm_key_vault_secret" "MyFirstSecret" {
   value        = "${random_string.MyFirstSecret.result}"
   key_vault_id = azurerm_key_vault.default.id
 }
+data "azurerm_key_vault_secret" "MyFirstSecret" {
+  name         = "MyFirstSecret"
+  key_vault_id = azurerm_key_vault.default.id
+  depends_on = [azurerm_key_vault.default, azurerm_key_vault_secret.MyFirstSecret]
+}
+output "MyFirstSecret" {
+  value = "${data.azurerm_key_vault_secret.MyFirstSecret.value}"
+  sensitive = true
+}
+resource "azurerm_sql_server" "mysqlserver" {
+  name                         = "bpfsqlserver"
+  resource_group_name          = azurerm_resource_group.default.name
+  location                     = azurerm_resource_group.default.location
+  version                      = "12.0"
+  administrator_login          = "bpf"
+  administrator_login_password = data.azurerm_key_vault_secret.MyFirstSecret.value
+  #"${random_string.MyFirstSecret.result}"
+}
+resource "azurerm_sql_database" "terraform-demo-sql-database" {
+  name                = "terraform-demo-sql-database"
+  resource_group_name = azurerm_resource_group.default.name
+  location            = azurerm_resource_group.default.location
+  server_name         = azurerm_sql_server.mysqlserver.name
+}
 
-# resource "azurerm_data_factory" "ADF01" {
-#   name                = "ADF01"
-#   location            = azurerm_resource_group.default.location
-#   resource_group_name = azurerm_resource_group.default.name
-# }
-# resource "azurerm_data_factory_pipeline" "ADF01PL01" {
-#   name            = "ADF01PL01"
-#   #data_factory_id = azurerm_data_factory.ADF01.id
-#   data_factory_name = azurerm_data_factory.ADF01.name
-#   resource_group_name = azurerm_resource_group.default.name
-# }
+resource "azurerm_storage_container" "default" {
+  name                  = "content"
+  storage_account_name  = azurerm_storage_account.default.name
+  container_access_type = "private"
+}
+resource "azurerm_storage_blob" "example" {
+  name                   = "file.csv"
+  storage_account_name   = azurerm_storage_account.default.name
+  storage_container_name = azurerm_storage_container.default.name
+  type                   = "Block"
+  source                 = "../file.csv"
+}
+
+resource "azurerm_data_factory" "ADF01" {
+  name                = "bpf7701ADF01"
+  location            = azurerm_resource_group.default.location
+  resource_group_name = azurerm_resource_group.default.name
+}
+resource "azurerm_data_factory_pipeline" "ADF01PL01" {
+  name            = "ADF01PL01"
+  #data_factory_id = azurerm_data_factory.ADF01.id
+  data_factory_name = azurerm_data_factory.ADF01.name
+  resource_group_name = azurerm_resource_group.default.name
+}
