@@ -7,12 +7,47 @@ resource "azurerm_storage_account" "default" {
   resource_group_name      = azurerm_resource_group.default.name
   location                 = azurerm_resource_group.default.location
   account_tier             = "Standard"
-  account_replication_type = "GRS"
-
-  tags = {
-    environment = "dev"
-  }
+  account_replication_type = "LRS"
+  allow_blob_public_access = true
 }
+resource "azurerm_storage_container" "default" {
+  name                  = "content"
+  storage_account_name  = azurerm_storage_account.default.name
+  container_access_type = "blob" # was "private"
+}
+
+resource "azurerm_storage_blob" "sample_csv" {
+  name                   = "file.csv"
+  storage_account_name   = azurerm_storage_account.default.name
+  storage_container_name = azurerm_storage_container.default.name
+  type                   = "Block"
+  source                 = "../file.csv"
+}
+
+
+resource "azurerm_storage_blob" "sample_pdf" {
+  name                   = "file.pdf"
+  storage_account_name   = azurerm_storage_account.default.name
+  storage_container_name = azurerm_storage_container.default.name
+  type                   = "Block"
+  source                 = "../file.pdf"
+}
+
+
+
+# resource "azurerm_role_assignment" "example" {
+#   scope              = azurerm_storage_account.example.id
+#   role_definition_id = data.azurerm_role_definition.storage_blob_data_reader.id
+#   principal_id       = "public"
+# }
+
+# data "azurerm_role_definition" "storage_blob_data_reader" {
+#   name = "Storage Blob Data Reader"
+# }
+
+
+
+/*
 resource "azurerm_key_vault" "default" {
   name                     = "bpf7701kv"
   location                 = azurerm_resource_group.default.location
@@ -75,19 +110,6 @@ resource "azurerm_sql_database" "terraform-demo-sql-database" {
   server_name         = azurerm_sql_server.mysqlserver.name
 }
 
-resource "azurerm_storage_container" "default" {
-  name                  = "content"
-  storage_account_name  = azurerm_storage_account.default.name
-  container_access_type = "private"
-}
-resource "azurerm_storage_blob" "example" {
-  name                   = "file.csv"
-  storage_account_name   = azurerm_storage_account.default.name
-  storage_container_name = azurerm_storage_container.default.name
-  type                   = "Block"
-  source                 = "../file.csv"
-}
-
 resource "azurerm_data_factory" "ADF01" {
   name                = "bpf7701ADF01"
   location            = azurerm_resource_group.default.location
@@ -99,3 +121,4 @@ resource "azurerm_data_factory_pipeline" "ADF01PL01" {
   data_factory_name = azurerm_data_factory.ADF01.name
   resource_group_name = azurerm_resource_group.default.name
 }
+*/
