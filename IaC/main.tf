@@ -13,7 +13,9 @@ resource "azurerm_storage_account" "default" {
 resource "azurerm_storage_container" "default" {
   name                  = "content"
   storage_account_name  = azurerm_storage_account.default.name
-  container_access_type = "blob" # was "private"
+  #container_access_type = "private"
+  container_access_type = "container"
+  #container_access_type = "blob" # was "private"
 }
 resource "azurerm_storage_blob" "sample_csv" {
   name                   = "file.csv"
