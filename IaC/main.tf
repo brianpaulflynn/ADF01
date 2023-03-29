@@ -15,7 +15,6 @@ resource "azurerm_storage_container" "default" {
   storage_account_name  = azurerm_storage_account.default.name
   container_access_type = "blob" # was "private"
 }
-
 resource "azurerm_storage_blob" "sample_csv" {
   name                   = "file.csv"
   storage_account_name   = azurerm_storage_account.default.name
@@ -23,8 +22,6 @@ resource "azurerm_storage_blob" "sample_csv" {
   type                   = "Block"
   source                 = "../file.csv"
 }
-
-
 resource "azurerm_storage_blob" "sample_pdf" {
   name                   = "file.pdf"
   storage_account_name   = azurerm_storage_account.default.name
@@ -32,20 +29,6 @@ resource "azurerm_storage_blob" "sample_pdf" {
   type                   = "Block"
   source                 = "../file.pdf"
 }
-
-
-
-# resource "azurerm_role_assignment" "example" {
-#   scope              = azurerm_storage_account.example.id
-#   role_definition_id = data.azurerm_role_definition.storage_blob_data_reader.id
-#   principal_id       = "public"
-# }
-
-# data "azurerm_role_definition" "storage_blob_data_reader" {
-#   name = "Storage Blob Data Reader"
-# }
-
-
 
 /*
 resource "azurerm_key_vault" "default" {
