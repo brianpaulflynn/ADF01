@@ -6,6 +6,11 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=2.76.0"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+
   }
 }
 provider "azurerm" {
@@ -22,6 +27,10 @@ provider "azurerm" {
     client_secret="${var.ARM_CLIENT_SECRET}"
 }
 data "azurerm_client_config" "current" {}
+
+provider "aws" {
+  region = "us-east-1"
+}
 
 variable "ARM_SUBSCRIPTION_ID" {
     type = string
