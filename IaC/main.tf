@@ -32,6 +32,11 @@ resource "azurerm_storage_blob" "sample_pdf" {
   source                 = "../file.pdf"
 }
 
+resource "azurerm_resource_group" "example" {
+  name     = "example-rg"
+  location = "West US"
+}
+
 /*
 resource "azurerm_key_vault" "default" {
   name                     = "bpf7701kv"
